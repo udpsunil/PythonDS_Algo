@@ -14,34 +14,30 @@ def main():
     # Open the file in readonly mode
     file = open(filename, 'r')
 
-    # for instructions in the file, loop through them and perform them
-    for line in file:
-        # strip the newline characters at the end of line
-        text = line.strip()
+    command = file.readline().strip()
 
-        # get the command and parameters from a command line.
-        commandList = text.split(',')
-
-        # get the drawing command
-        command = commandList[0]
+    # If the command is empty, then there are no more commands left in the file.
+    while command != "":
+        
+        # Read the rest of the record and then process it.
 
         if command == "goto":
-            x = float(commandList[1])
-            y = float(commandList[2])
-            width = float(commandList[3])
-            color = commandList[4].strip()
+            x = float(file.readline())
+            y = float(file.readline())
+            width = float(file.readline())
+            color = file.readline().strip()
             t.width(width)
             t.pencolor(color)
             t.goto(x, y)
         elif command == "circle":
-            radius = float(commandList[1])
-            width = float(commandList[2])
-            color = commandList[3].strip()
+            radius = float(file.readline())
+            width = float(file.readline())
+            color = file.readline().strip()
             t.width(width)
             t.pencolor(color)
             t.circle(radius)
         elif command == "beginfill":
-            color = commandList[1].strip()
+            color = file.readline().strip()
             t.fillcolor(color)
             t.begin_fill()
         elif command == "endfill":
@@ -52,6 +48,8 @@ def main():
             t.pendown()
         else:
             print("Unknown command found in file:", command)
+
+    command = file.readline().strip()
 
     # close the file handle
     file.close()
