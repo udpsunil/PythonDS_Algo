@@ -1,67 +1,68 @@
 import turtle
+from Command import *
+
+class PyList:
+    def __init__(self):
+        self.items = []
+
+    def append(self, item):
+        self.items = self.items + [item]
+
+    # If we want to iterate over the sequence, we need to define special method called __iter__(self).
+    # Without this we'll get builtin TypeError
+
+    def __iter__(self):
+        for c in self.items:
+            yield c
 
 def main():
-    # the main code of the program
-    # read file path from user
     filename = input("Please enter drawing filename: ")
 
-    # Create a turtle graphic window to draw in
     t = turtle.Turtle()
-
-    # Create a screen
     screen = t.getscreen()
-
-    # Open the file in readonly mode
     file = open(filename, 'r')
 
-    # for instructions in the file, loop through them and perform them
-    for line in file:
-        # strip the newline characters at the end of line
-        text = line.strip()
+    # Create a pylist to hold the graphics command that are read from the file.
+    graphicsCommands = PyList()
 
-        # get the command and parameters from a command line.
-        commandList = text.split(',')
+    command = file.readline().strip()
 
-        # get the drawing command
-        command = commandList[0]
+    while command != "":
 
         if command == "goto":
-            x = float(commandList[1])
-            y = float(commandList[2])
-            width = float(commandList[3])
-            color = commandList[4].strip()
-            t.width(width)
-            t.pencolor(color)
-            t.goto(x, y)
+            x = float(file.readline())
+            y = float(file.readline())
+            width = float(file.readline())
+            color = file.readline().strip()
+            cmd = GoToCommand(x, y, width, color)
         elif command == "circle":
-            radius = float(commandList[1])
-            width = float(commandList[2])
-            color = commandList[3].strip()
-            t.width(width)
-            t.pencolor(color)
-            t.circle(radius)
+            radius = float(file.readline())
+            width = float(file.readline())
+            color = file.readline().strip()
+            cmd = CircleCommand(radius, width, color)
         elif command == "beginfill":
-            color = commandList[1].strip()
-            t.fillcolor(color)
-            t.begin_fill()
+            color = file.readline().strip()
+            cmd = BeginFillCommand(color)
         elif command == "endfill":
-            t.end_fill()
+            cmd = EndFillCommand()
         elif command == "penup":
-            t.penup()
+            cmd = PenUpCommand()
         elif command == "pendown":
-            t.pendown()
+            cmd = PenDownCommand()
         else:
-            print("Unknown command found in file:", command)
+            raise RuntimeError("Unknown Command: " + command)
+        
+        graphicsCommands.append(cmd)
+        command = file.readline().strip()
 
-    # close the file handle
+
+    for cmd in graphicsCommands:
+        cmd.draw(t)
+
     file.close()
-
-    # hide the turtle that was used to draw the picture
     t.ht()
-
     screen.exitonclick()
     print("Program Execution Completed.")
-
 
 if __name__ == "__main__":
     main()
