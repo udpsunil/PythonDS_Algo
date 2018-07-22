@@ -49,7 +49,7 @@ def main():
         else:
             print("Unknown command found in file:", command)
 
-    command = file.readline().strip()
+        command = file.readline().strip()
 
     # close the file handle
     file.close()
